@@ -1,17 +1,15 @@
 #include "abstractlogger.h"
+#include "logfile.h"
 #include "systemnotification.h"
 #include <cassert>
 
+#include <QDateTime>
 #include <QFileInfo>
 
 AbstractLogger::AbstractLogger(Channel channel, int targets)
   : m_defaultChannel(channel)
   , m_targets(targets)
-{
-    if (targets & LogFile) {
-        // TODO
-    }
-}
+{}
 
 /**
  * @brief Construct an AbstractLogger with output to a string.
@@ -57,7 +55,10 @@ AbstractLogger& AbstractLogger::sendMessage(const QString& msg, Channel channel)
         }
     }
     if (m_targets & LogFile) {
-        // TODO
+        QString data;
+        QTextStream stream(&data);
+        stream << messageHeader(channel, LogFile) << msg << "\n";
+        LogFile::write(&data);
     }
     if (m_targets & Stderr) {
         QTextStream stream(stderr);
@@ -132,6 +133,9 @@ QString AbstractLogger::messageHeader(Channel channel, Target target)
     if (target == Notification) {
         messageChannel[0] = messageChannel[0].toUpper();
         return "Flameshot " + messageChannel;
+    } else if (target == LogFile) {
+        return QDateTime::currentDateTime().toString(Qt::ISODateWithMs) + ":[" +
+               messageChannel + "]: ";
     } else {
         return "flameshot: " + messageChannel + ": ";
     }

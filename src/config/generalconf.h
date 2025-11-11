@@ -105,7 +105,6 @@ private:
     void initReverseArrow();
     void initInsecurePixelate();
     void initLogToFile();
-    static QString defaultLogFilePath();
 
     void _updateComponents(bool allowEmptySavePath);
 

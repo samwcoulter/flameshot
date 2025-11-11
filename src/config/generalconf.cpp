@@ -250,7 +250,7 @@ void GeneralConf::resetConfiguration()
     if (reply == QMessageBox::Yes) {
         m_savePath->setText(
           QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-        m_logFilePath->setText(defaultLogFilePath());
+        m_logFilePath->setText(LogFile::defaultLogFilePath());
         ConfigHandler().setDefaultSettings();
         _updateComponents(true);
     }
@@ -718,7 +718,7 @@ void GeneralConf::changeLogFilePath()
     QString path = ConfigHandler().logFilePath();
 
     if (path.isEmpty()) {
-        path = defaultLogFilePath();
+        path = LogFile::defaultLogFilePath();
     }
 
     path = QFileDialog::getExistingDirectory(
@@ -924,16 +924,6 @@ void GeneralConf::initInsecurePixelate()
             &GeneralConf::setInsecurePixelate);
 }
 
-QString GeneralConf::defaultLogFilePath()
-{
-#ifdef QT_STATE_DIR_SUPPORTED
-    const auto defaultLocation = QStandardPaths::StateLocation;
-#else
-    const auto defaultLocation = QStandardPaths::AppLocalDataLocation;
-#endif
-    return QStandardPaths::writableLocation(defaultLocation);
-}
-
 void GeneralConf::initLogToFile()
 {
     auto* box = new QGroupBox(tr("Logging"));
@@ -954,10 +944,6 @@ void GeneralConf::initLogToFile()
     auto* pathLayout = new QHBoxLayout();
 
     QString path = ConfigHandler().logFilePath();
-    if (path.isEmpty()) {
-        path = defaultLogFilePath();
-        ConfigHandler().setLogFilePath(path);
-    }
     m_logFilePath = new QLineEdit(path, this);
     m_logFilePath->setToolTip(
       tr("The directory where log files will be saved"));

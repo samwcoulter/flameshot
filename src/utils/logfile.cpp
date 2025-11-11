@@ -26,6 +26,16 @@ void LogFile::resetLogFile()
     m_instance = nullptr;
 }
 
+QString LogFile::defaultLogFilePath()
+{
+#ifdef QT_STATE_DIR_SUPPORTED
+    const auto defaultLocation = QStandardPaths::StateLocation;
+#else
+    const auto defaultLocation = QStandardPaths::AppLocalDataLocation;
+#endif
+    return QStandardPaths::writableLocation(defaultLocation);
+}
+
 LogFile::LogFile()
 {
     auto stateDirectory = QDir(ConfigHandler().logFilePath());
@@ -44,14 +54,18 @@ LogFile::LogFile()
 
     auto logFilePath = stateDirectory.filePath(LOG_FILE_NAME);
     m_logFile = new QFile(logFilePath);
-    m_logFile->open(QIODeviceBase::WriteOnly | QIODeviceBase::Append);
-    m_writer.setDevice(m_logFile);
+    if (m_logFile->open(QIODeviceBase::WriteOnly | QIODeviceBase::Append)) {
+        m_writer = std::make_unique<QTextStream>();
+        m_writer->setDevice(m_logFile);
+    }
 }
 
 void LogFile::writeToFile(const QString* data)
 {
-    m_writer << *data;
-    m_writer.flush();
+    if (m_writer) {
+        *m_writer << *data;
+        m_writer->flush();
+    }
 }
 
 LogFile* LogFile::m_instance = nullptr;

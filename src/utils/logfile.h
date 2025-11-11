@@ -4,12 +4,14 @@
 #include <QFile>
 #include <QMutex>
 #include <QTextStream>
+#include <memory>
 
 class LogFile
 {
 public:
     static void write(const QString* data);
     static void resetLogFile();
+    static QString defaultLogFilePath();
 
     LogFile(LogFile&& other) = delete;
     LogFile(LogFile& other) = delete;
@@ -21,7 +23,7 @@ private:
     LogFile();
     void writeToFile(const QString* data);
     QFile* m_logFile;
-    QTextStream m_writer;
+    std::unique_ptr<QTextStream> m_writer;
     static LogFile* m_instance;
     static QMutex m_mutex;
 };

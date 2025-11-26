@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QMutex>
+#include <QSharedMemory>
 #include <QTextStream>
 #include <memory>
 
@@ -17,13 +18,14 @@ public:
     LogFile(LogFile& other) = delete;
     LogFile operator=(LogFile& other) = delete;
     LogFile operator=(LogFile&& other) = delete;
-    ~LogFile() = default;
+    ~LogFile();
 
 private:
-    LogFile();
+    LogFile(QObject* parent);
     void writeToFile(const QString* data);
     std::unique_ptr<QFile> m_logFile;
     std::unique_ptr<QTextStream> m_writer;
+    std::unique_ptr<QSharedMemory> m_shm;
     static LogFile* m_instance;
     static QMutex m_mutex;
 };

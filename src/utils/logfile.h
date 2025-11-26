@@ -21,11 +21,11 @@ public:
     ~LogFile();
 
 private:
-    LogFile(QObject* parent);
+    explicit LogFile(QObject* parent);
     void writeToFile(const QString* data);
     std::unique_ptr<QFile> m_logFile;
     std::unique_ptr<QTextStream> m_writer;
-    std::unique_ptr<QSharedMemory> m_shm;
+    QSharedMemory* m_shm;
     static LogFile* m_instance;
     static QMutex m_mutex;
 };

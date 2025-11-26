@@ -41,8 +41,8 @@ QString LogFile::defaultLogFilePath()
 
 LogFile::LogFile(QObject* parent)
 {
-    const char* key = "org.flameshot.Flameshot-" APP_VERSION "-logfileroller";
-    m_shm = std::make_unique<QSharedMemory>(QString(key), parent);
+    const char* key = "org.flameshot.Flameshot-" APP_VERSION "-logfileroll";
+    m_shm = new QSharedMemory(QString(key), parent);
 
     if (m_shm->create(sizeof(bool))) {
         // We have just created the shared memory, zero it
